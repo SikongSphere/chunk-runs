@@ -20,17 +20,15 @@
 
     <repositories>
         <repository>
-            <id>osgeo-snapshot</id>
-            <name>Maven Central Repo</name>
-            <url>https://repo1.maven.org/maven2/</url>
-            <snapshots><enabled>true</enabled></snapshots>
+            <id>osgeo</id>
+            <name>OSGeo Release Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <snapshots><enabled>false</enabled></snapshots>
             <releases><enabled>true</enabled></releases>
         </repository>
     </repositories>
 
     <dependencies>
-
-        <!--hbase相关依赖-->
         <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-client</artifactId>
@@ -52,7 +50,6 @@
             <version>${scalatest.version}</version>
             <scope>test</scope>
         </dependency>
-        <!--geotools相关依赖-->
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
@@ -85,12 +82,12 @@
         </dependency>
         <dependency>
             <groupId>org.locationtech.geomesa</groupId>
-            <artifactId>geomesa-utils_${scala.version}</artifactId>
+            <artifactId>geomesa-utils_${scala.binary.version}</artifactId>
             <version>${geomesa.version}</version>
         </dependency>
         <dependency>
             <groupId>org.locationtech.geomesa</groupId>
-            <artifactId>geomesa-hbase-datastore_${scala.version}</artifactId>
+            <artifactId>geomesa-hbase-datastore_${scala.binary.version}</artifactId>
             <version>${geomesa.version}</version>
         </dependency>
         <dependency>
