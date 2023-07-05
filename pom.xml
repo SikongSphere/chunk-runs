@@ -16,6 +16,7 @@
         <geotools.version>25.5</geotools.version>
         <mysql.version>8.0.16</mysql.version>
         <zookeeper.version>3.5.7</zookeeper.version>
+        <ifctools.version>0.1.0-release</ifctools.version>
     </properties>
 
     <repositories>
@@ -26,9 +27,21 @@
             <snapshots><enabled>false</enabled></snapshots>
             <releases><enabled>true</enabled></releases>
         </repository>
+        <repository>
+            <id>maven</id>
+            <name>Central Repository</name>
+            <url>https://repo1.maven.org/maven2/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+        </repository>
     </repositories>
 
     <dependencies>
+        <dependency>
+        <groupId>org.sikongsphere</groupId>
+        <artifactId>sikongsphere-ifctools</artifactId>
+        <version>${ifctools.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-client</artifactId>
