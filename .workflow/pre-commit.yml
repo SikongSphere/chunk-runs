@@ -9,7 +9,7 @@ triggers:
         - develop
 stages:
   - name: stage-c1de456d
-    displayName: 未命名
+    displayName: 构建
     strategy: naturally
     trigger: auto
     executor: []
@@ -63,7 +63,7 @@ stages:
         strategy:
           retry: '0'
   - name: stage-bc560406
-    displayName: 未命名
+    displayName: 测试
     strategy: naturally
     trigger: auto
     executor: []
