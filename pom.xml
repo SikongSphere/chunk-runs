@@ -19,7 +19,7 @@
         <curator.version>4.3.0</curator.version>
         <lombok.version>1.18.20</lombok.version>
         <slf4j.version>1.7.26</slf4j.version>
-        <ifctools.version>0.1.0-release</ifctools.version>
+        <ifctools.version>0.2.0-beta</ifctools.version>
         <maven-surefire.version>2.5</maven-surefire.version>
         <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
         <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
