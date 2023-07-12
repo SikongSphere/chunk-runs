@@ -55,6 +55,8 @@ public class SimpleFeatureHandlerTest {
             this.simpleFeatureTypeName,
             this.simpleFeatureTypeField
         );
+        dataStore.createSchema(simpleFeatureType);
+
         SimpleFeature simpleFeature = this.mkExampleData(simpleFeatureType);
 
         writer.writeFeature(dataStore, simpleFeatureType, simpleFeature);
