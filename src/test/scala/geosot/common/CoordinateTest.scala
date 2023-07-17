@@ -1,4 +1,17 @@
+/*
+ * Copyright 2023 SikongSphere
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+*/
+
 package geosot.common
+
+import munit.FunSuite
 
 class CoordinateTest extends munit.FunSuite {
     private val latitudes = Array[String](
@@ -7,15 +20,18 @@ class CoordinateTest extends munit.FunSuite {
         "42°33'0.11\" S",
         "42°28'31.87\" N"
     )
+
     private val longitudes = Array[String](
         "1°32'0.06\" E",
         "1°44'25.01\" W",
         "1°26'59.5\" W",
         "1°26'30.23\" E"
     )
+
     private val lat_ans = Array[(Int, Int, Double, String)](
         (42, 38, 59.68, "S"), (42, 35, 15.54, "N"), (42, 33, 0.11, "S"), (42, 28, 31.87, "N"),
     )
+
     private val lon_ans = Array[(Int, Int, Double, String)](
         (1, 32, 0.06, "E"), (1, 44, 25.01, "W"), (1, 26, 59.5, "W"), (1, 26, 30.23, "E")
     )

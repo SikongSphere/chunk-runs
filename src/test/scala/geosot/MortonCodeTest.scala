@@ -1,34 +1,62 @@
+/*
+ * Copyright 2023 SikongSphere
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+*/
+
 package geosot
 
+import munit.FunSuite
+import geosot.common._
 
 class MortonCodeTest extends munit.FunSuite {
-    private val morton_coder = MortonCode
-
-    private val coordinates = List[Array[Int]](
-        Array[Int](-1, -1, -1),
-        Array[Int](1, 2, 3)
+    private val coordinates = List[(Int, Int)](
+        (0xFFFFFFFF, 0xFFFFFFFF),
+        (0xC0007A, 0x954DDD70),
+        (0x80D8C814, 0x15467C51)
     )
-    private val morton_code = List[Array[Byte]](
-        Array[Byte](-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1),
-        Array[Byte](53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+    private val quadCode = List[String](
+        "33333333333333333333333333333333",
+        "20020202130022022202220203331010",
+        "10020202130112201322320002030102"
     )
 
     test("Encode") {
-        for(i <- Range(0, coordinates.size)) {
-            var obtained = morton_coder.enCode(coordinates(i))
-            var expected = morton_code(i)
-            assert(clue(obtained.size) == clue(expected.size))
-            assert(clue(obtained.mkString(",")) == clue(expected.mkString(",")))
+        for (i <- Range(0, coordinates.size)) {
+            val code = MortonCode(Longitude(coordinates(i)._1), Latitude(coordinates(i)._2))
+            var obtained = code.toString
+            var expected = quadCode(i)
+            assert(clue(obtained) == clue(expected))
         }
     }
 
     test("Decode") {
-        for (i <- Range(0, coordinates.size)) {
-            var obtained = morton_coder.deCode(morton_code(i))
+        for (i <- Range(0, quadCode.size)) {
+            val mortonCode = quaternaryStringToBinaryCode(quadCode(i))
+            val code = MortonCode(mortonCode)
+            val res = code.decode()
+            var obtained = (res(0), res(1))
             var expected = coordinates(i)
-            assert(clue(obtained.size) == clue(expected.size))
-            assert(clue(obtained.mkString(",")) == clue(expected.mkString(",")))
+            assert(clue(obtained) == clue(expected))
         }
+    }
+
+    def quaternaryStringToBinaryCode(code: String): Array[Int] = {
+        val mortonCode = code.substring(0)
+        val reversedCode = mortonCode.reverse + "0" * (32 - mortonCode.size)
+        val res = Array.ofDim[Int](reversedCode.size * 2 / 32)
+        for (i <- Range(0, reversedCode.size)) {
+            val int_idx = i * 2 / 32
+            val num = (reversedCode(i) - '0') & 0x3
+            res(int_idx) = res(int_idx) | (num << (i * 2 % 32))
+        }
+        res
     }
 
 }

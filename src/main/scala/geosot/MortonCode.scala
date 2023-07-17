@@ -14,7 +14,7 @@ package geosot
 import geosot.common._
 
 /**
- * 经度的封装类
+ * 莫顿编码的实现类
  *
  * @author Ziming Zhang
  * @date 2023/7/17 21:54
