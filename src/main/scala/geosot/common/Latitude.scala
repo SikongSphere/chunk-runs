@@ -2,19 +2,41 @@ package geosot.common
 
 import scala.util.matching.Regex
 
-class Latitude(dms: String) extends Coordinate {
-    val regex_dms_ : Regex = """(\d+)°(\d+)'(\d+(\.\d+)?)"\s([NS])""".r
+/**
+ * 纬度的封装类
+ *
+ * @author Ziming Zhang
+ * @date 2023/7/17 21:32
+ */
+class Latitude extends Coordinate {
+    private val _regex_dms : Regex = """\s*(\d+)°(\d+)'(\d+(\.\d+)?)"\s([NS])\s*""".r
+}
 
-    super.parseFromString(dms, regex_dms_)
-
-    //转换为指定精度的二进制编码
-    override def getValue(precision: Int = 32): Int = {
-        var res: Int = concatDegMinSec()
-        if (direction == "S") {
+object Latitude {
+    /**
+     * @param dms "{度}°{分}'{秒}\" {方位}"格式的String
+     */
+    def apply(dms: String) = {
+        var lat = new Latitude
+        lat.parseFromString(dms, lat._regex_dms)
+        var res: Int = lat.concatDegMinSec()
+        if (lat.direction == "S") {
             res = res | (1 << 31)
         }
-        val shift = 32 - precision
-        (res >>> shift) << shift
+        lat.value_ = res
+        lat
     }
 
+    /**
+     * @param value 32位编码的坐标信息，度占8位，分和秒分别占6位，小数点后的数字精确到1/2048秒，占用11位
+     * @see Coordinate
+     */
+    def apply(value: Int) = {
+        val obj = new Latitude
+        obj.direction_ = if (value >>> 31 == 1) "S" else "N"
+        obj.splitDegMinSec(value)
+        obj.value_ = value
+        obj
+    }
 }
+
