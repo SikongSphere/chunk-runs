@@ -1,51 +1,75 @@
+/*
+ * Copyright 2023 SikongSphere
+ *
+ * This program is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+*/
+
 package geosot
 
 import geosot.common._
 
-class Grid() {
 
-    private var latitude: Latitude = new Latitude("0°0'0\" N")
-    private var longitude: Longitude = new Longitude("0°0'0\" E")
-    private var elevation: Option[Elevation] = None
-    private var code: Array[Byte] = Array.ofDim[Byte](8)
-
-    def this(lat: String, lon: String) = {
-        this()
-        latitude = new Latitude(lat)
-        longitude = new Longitude(lon)
-        code = MortonCode.enCode(Array[Int](longitude.getValue(), latitude.getValue()))
-    }
-    def this(lat: String, lon: String, elev: String) = {
-        this(lat, lon)
-        val elev_inst = new Elevation(elev)
-        elevation = Some(elev_inst)
-        code = MortonCode.enCode(Array[Int](longitude.getValue(), latitude.getValue(), elev_inst.getValue()))
-    }
+/**
+ * GeoSOT地球网格参考系统中的单个网格
+ *
+ * @example 将”度°分'秒\" 方位“格式的坐标转换为GeoSOT编码
+ *          val grid = Grid("42°38'59.68" S", "1°32'0.06" E", 32)
+ *          val geosotCode = grid.toString
+ *
+ * @author Ziming Zhang
+ * @date 2023/7/17 22:57
+ */
+class Grid {
+    private var latitude_ : Latitude = Latitude("0°0'0\" N")
+    private var longitude_ : Longitude = Longitude("0°0'0\" E")
+    private var elevation_ : Elevation = Elevation("0")
+    private var level_ : Int = 32
+    private var code_ : MortonCode = MortonCode(longitude_, latitude_, elevation_)
 
     override def toString: String = {
-        code.size match {
-            case 8 => {
-                var str_builder = new StringBuilder("G")
-                for(i: Int <- 7 to 0 by -1) {
-                    str_builder.append(byteToQuaternary(code(i)))
-                }
-                str_builder.toString()
-            }
-            case _ => "G000000000-000000-000000-00000000000"
-        }
-    }
-
-    def byteToQuaternary(byte: Byte): String = {
-        val quaternaryDigits = "0123"
-        val resultBuilder = new StringBuilder()
-        var tempByte = byte
-
-        for (_ <- 1 to 4) {
-            val digit = quaternaryDigits.charAt(tempByte & 0x03)
-            resultBuilder.insert(0, digit)
-            tempByte = (tempByte >> 2).toByte
-        }
-        resultBuilder.toString()
+        "G" + code_.toString
     }
 
 }
+
+
+object Grid {
+    /**
+     *
+     * @param lat 纬度
+     * @param lon 经度
+     * @param level 参考网格所属层级，取值0~32
+     * @return 返回二维空间指定层级下对应的网格
+     */
+    def apply(lat: String, lon: String, level: Int): Grid = {
+        val obj = new Grid
+        obj.latitude_ = Latitude(lat)
+        obj.longitude_ = Longitude(lon)
+        obj.level_ = level
+        obj.code_ = MortonCode(obj.longitude_, obj.latitude_)
+        obj
+    }
+
+    /**
+     *
+     * @param lat   纬度
+     * @param lon   经度
+     * @param level 参考网格所属层级，取值0~32
+     * @return 返回三维空间指定层级下对应的网格
+     */
+    def apply(lat: String, lon: String, elev: String, level: Int): Grid = {
+        val obj = new Grid
+        obj.latitude_ = Latitude(lat)
+        obj.longitude_ = Longitude(lon)
+        obj.elevation_ = Elevation(elev)
+        obj.level_ = level
+        obj.code_ = MortonCode(obj.longitude_, obj.latitude_, obj.elevation_)
+        obj
+    }
+}
+
