@@ -40,7 +40,7 @@ class MortonCode {
      *
      * @example 比特交叠示例
      *          dims[0-7]: X0X1X2X3 | Y0Y1Y2Y3
-     *          result[0-7]: X1Y1X2Y2 | X3Y3X4Y4
+     *          result[0-7]: X0Y0X1Y1 | X2Y2X3Y3
      * @return 返回交叠后的莫顿编码值
      */
     private def simpleInterleave(dims: Array[Dimension]): Array[Int] = {

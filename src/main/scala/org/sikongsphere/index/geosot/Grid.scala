@@ -30,7 +30,7 @@ class Grid {
     private var code_ : MortonCode = MortonCode(longitude_, latitude_, elevation_)
 
     override def toString: String = {
-        "G" + code_.toString
+        ("G" + code_.toString).substring(0, level_)
     }
 
 }
