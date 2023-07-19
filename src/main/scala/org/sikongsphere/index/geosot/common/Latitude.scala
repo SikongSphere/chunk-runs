@@ -8,33 +8,32 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
 */
+package org.sikongsphere.index.geosot.common
 
-package geosot.common
+import scala.util.matching.Regex
 
 /**
- * 经度的封装类
+ * 纬度的封装类
  *
  * @author Ziming Zhang
- * @date 2023/7/17 21:35
  */
-class Longitude extends Coordinate {
-    private val _regex_dms = """\s*(\d+)°(\d+)'(\d+(\.\d+)?)"\s([EW])\s*""".r
+class Latitude extends Coordinate {
+    private val _regex_dms : Regex = """\s*(\d+)°(\d+)'(\d+(\.\d+)?)"\s([NS])\s*""".r
 }
 
-object Longitude {
+object Latitude {
     /**
      * @param dms "{度}°{分}'{秒}\" {方位}"格式的String
      */
     def apply(dms: String) = {
-        val lon = new Longitude
-        lon.parseFromString(dms, lon._regex_dms)
-        lon.parseFromString(dms, lon._regex_dms)
-        var res: Int = lon.concatDegMinSec()
-        if (lon.direction == "W") {
+        var lat = new Latitude
+        lat.parseFromString(dms, lat._regex_dms)
+        var res: Int = lat.concatDegMinSec()
+        if (lat.direction == "S") {
             res = res | (1 << 31)
         }
-        lon.value_ = res
-        lon
+        lat.value_ = res
+        lat
     }
 
     /**
@@ -42,10 +41,11 @@ object Longitude {
      * @see Coordinate
      */
     def apply(value: Int) = {
-        val obj = new Longitude
-        obj.direction_ = if (value>>>31 == 1) "W" else "E"
+        val obj = new Latitude
+        obj.direction_ = if (value >>> 31 == 1) "S" else "N"
         obj.splitDegMinSec(value)
         obj.value_ = value
         obj
     }
 }
+

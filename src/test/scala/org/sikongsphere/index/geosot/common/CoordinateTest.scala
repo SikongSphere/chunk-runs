@@ -9,7 +9,7 @@
  * General Public License for more details.
 */
 
-package geosot.common
+package org.sikongsphere.index.geosot.common
 
 import munit.FunSuite
 
@@ -36,7 +36,7 @@ class CoordinateTest extends munit.FunSuite {
         (1, 32, 0.06, "E"), (1, 44, 25.01, "W"), (1, 26, 59.5, "W"), (1, 26, 30.23, "E")
     )
 
-    test("Latitude.parseFromString") {
+    test("GeoSOT.Latitude.parseFromString") {
         for(i: Int <- Range(0, latitudes.size)) {
             val new_lat = new Latitude(latitudes(i))
             val obtained = (new_lat.degree, new_lat.minutes, new_lat.seconds, new_lat.direction)
@@ -45,7 +45,7 @@ class CoordinateTest extends munit.FunSuite {
         }
     }
 
-    test("Longitude.parseFromString") {
+    test("GeoSOT.Longitude.parseFromString") {
         for (i: Int <- Range(0, longitudes.size)) {
             val new_lon = new Longitude(longitudes(i))
             val obtained = (new_lon.degree, new_lon.minutes, new_lon.seconds, new_lon.direction)

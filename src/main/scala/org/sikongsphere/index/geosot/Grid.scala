@@ -8,10 +8,9 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
 */
+package org.sikongsphere.index.geosot
 
-package geosot
-
-import geosot.common._
+import org.sikongsphere.index.geosot.common._
 
 
 /**
@@ -22,7 +21,6 @@ import geosot.common._
  *          val geosotCode = grid.toString
  *
  * @author Ziming Zhang
- * @date 2023/7/17 22:57
  */
 class Grid {
     private var latitude_ : Latitude = Latitude("0°0'0\" N")

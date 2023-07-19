@@ -9,10 +9,10 @@
  * General Public License for more details.
 */
 
-package geosot
+package org.sikongsphere.index.geosot
 
 import munit.FunSuite
-import geosot.common._
+import org.sikongsphere.index.geosot.common._
 
 class MortonCodeTest extends munit.FunSuite {
     private val coordinates = List[(Int, Int)](
@@ -27,7 +27,7 @@ class MortonCodeTest extends munit.FunSuite {
         "10020202130112201322320002030102"
     )
 
-    test("Encode") {
+    test("GeoSOT.Morton.Encode") {
         for (i <- Range(0, coordinates.size)) {
             val code = MortonCode(Longitude(coordinates(i)._1), Latitude(coordinates(i)._2))
             var obtained = code.toString
@@ -36,7 +36,7 @@ class MortonCodeTest extends munit.FunSuite {
         }
     }
 
-    test("Decode") {
+    test("GeoSOT.Morton.Decode") {
         for (i <- Range(0, quadCode.size)) {
             val mortonCode = quaternaryStringToBinaryCode(quadCode(i))
             val code = MortonCode(mortonCode)

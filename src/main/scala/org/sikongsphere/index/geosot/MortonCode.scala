@@ -8,16 +8,14 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
 */
+package org.sikongsphere.index.geosot
 
-package geosot
-
-import geosot.common._
+import org.sikongsphere.index.geosot.common._
 
 /**
  * 莫顿编码的实现类
  *
  * @author Ziming Zhang
- * @date 2023/7/17 21:54
  */
 class MortonCode {
     private final val COMP_LEN = 32

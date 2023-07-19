@@ -8,8 +8,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
 */
-
-package geosot.common
+package org.sikongsphere.index.geosot.common
 
 import scala.util.matching.Regex
 
@@ -18,7 +17,6 @@ import scala.util.matching.Regex
  * 任何可以以”度-分-秒“表示的坐标分量的抽象
  *
  * @author Ziming Zhang
- * @date 2023/7/17 21:22
  */
 abstract class Coordinate extends Dimension{
     protected var degrees_ = 0

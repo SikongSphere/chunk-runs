@@ -9,7 +9,7 @@
  * General Public License for more details.
 */
 
-package geosot
+package org.sikongsphere.index.geosot
 
 import munit.FunSuite
 
@@ -23,7 +23,7 @@ class GridTest extends munit.FunSuite {
         "G10020202130112201322320002030102"
     )
 
-    test("Precision32") {
+    test("GeoSOT.Grid.Precision32") {
         val LEVEL = 32
         for (i <- Range(0, coordinates.size)) {
             val lat_lon = coordinates(i).split(", ")
