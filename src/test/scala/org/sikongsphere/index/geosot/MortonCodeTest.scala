@@ -8,13 +8,13 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
 */
-
 package org.sikongsphere.index.geosot
 
-import munit.FunSuite
+import org.scalatest.{FunSpec, ShouldMatchers}
 import org.sikongsphere.index.geosot.common._
 
-class MortonCodeTest extends munit.FunSuite {
+
+class MortonCodeTest extends FunSpec with ShouldMatchers {
     private val coordinates = List[(Int, Int)](
         (0xFFFFFFFF, 0xFFFFFFFF),
         (0xC0007A, 0x954DDD70),
@@ -27,23 +27,26 @@ class MortonCodeTest extends munit.FunSuite {
         "10020202130112201322320002030102"
     )
 
-    test("GeoSOT.Morton.Encode") {
-        for (i <- Range(0, coordinates.size)) {
-            val code = MortonCode(Longitude(coordinates(i)._1), Latitude(coordinates(i)._2))
-            var obtained = code.toString
-            var expected = quadCode(i)
-            assert(clue(obtained) == clue(expected))
+    describe("GeoSOT.Morton.Encode") {
+        it("can convert coordinate points to morton code") {
+            for (i <- Range(0, coordinates.size)) {
+                val code = MortonCode(Longitude(coordinates(i)._1), Latitude(coordinates(i)._2))
+                var obtained = code.toString
+                var expected = quadCode(i)
+                obtained should be(expected)
+            }
         }
     }
 
-    test("GeoSOT.Morton.Decode") {
+    describe("GeoSOT.Morton.Decode") {
+        it("can convert morton code to coordinate points")
         for (i <- Range(0, quadCode.size)) {
             val mortonCode = quaternaryStringToBinaryCode(quadCode(i))
             val code = MortonCode(mortonCode)
             val res = code.decode()
             var obtained = (res(0), res(1))
             var expected = coordinates(i)
-            assert(clue(obtained) == clue(expected))
+            obtained should be(expected)
         }
     }
 
@@ -58,5 +61,4 @@ class MortonCodeTest extends munit.FunSuite {
         }
         res
     }
-
 }
