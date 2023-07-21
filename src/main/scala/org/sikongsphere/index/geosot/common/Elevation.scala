@@ -10,6 +10,9 @@
 */
 package org.sikongsphere.index.geosot.common
 
+import Math.PI
+import GeoParam._
+
 /**
  * GeoSOT中高程的封装类。
  * 设定高度单位是度分秒，参考椭球参数，建立空间高度单位与千米、米的换算关系：D˚×πR/180˚=H km。
@@ -18,18 +21,35 @@ package org.sikongsphere.index.geosot.common
  * @author Ziming Zhang
  */
 class Elevation extends Dimension {
-    private final val EARTH_RADIUS = 6302.106722602182
+	private var height_ : Double = 0
 
-    override def getValue(precision: Int): Int = 0
+    override def getValue(precision: Int): Int = {
+			(Math.log((height_ + GeoParam.EarthRadiusMeters) / GeoParam.EarthRadiusMeters) / Math.log(1 + GeoParam.theta_0)).toInt
+	}
 }
 
 object Elevation {
     /**
      *
-     * @param elevation
+     * @param elevation "GB/T 16831规定的高程表示，单位是米"
      * @return
+     * @example
+     *      val elev = "978.90m"
+     *      elevation = Elevation(elev)
      */
-    def apply(elevation: String) = {
-        ???
+    def apply(elevation: String): Elevation = {
+        val obj = new Elevation
+        obj
     }
+
+	
+	/*
+	 * 获取m级网格在大地高为H处高度域参数，遵照GB/T 40087-2021中6.3.2小节中的公式(5)
+	 * @param H 大地高，单位（米）
+	*  @param m 网格层级
+     */
+	def getLayerNumberAtAltitude(H: Double, m: Int): Int = {
+		var res: Int = 0
+		res
+	}
 }

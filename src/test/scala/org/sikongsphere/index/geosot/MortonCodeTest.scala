@@ -10,7 +10,7 @@
 */
 package org.sikongsphere.index.geosot
 
-import org.scalatest.{FunSpec, ShouldMatchers}
+import org.scalatest.matchers._
 import org.sikongsphere.index.geosot.common._
 
 

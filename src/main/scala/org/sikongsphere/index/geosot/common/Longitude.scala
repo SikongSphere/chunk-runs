@@ -23,7 +23,7 @@ object Longitude {
     /**
      * @param dms "{度}°{分}'{秒}\" {方位}"格式的String
      */
-    def apply(dms: String) = {
+    def apply(dms: String): Longitude = {
         val lon = new Longitude
         lon.parseFromString(dms, lon._regex_dms)
         lon.parseFromString(dms, lon._regex_dms)
@@ -39,7 +39,7 @@ object Longitude {
      * @param value 32位编码的坐标信息，度占8位，分和秒分别占6位，小数点后的数字精确到1/2048秒，占用11位
      * @see Coordinate
      */
-    def apply(value: Int) = {
+    def apply(value: Int): Longitude = {
         val obj = new Longitude
         obj.direction_ = if (value>>>31 == 1) "W" else "E"
         obj.splitDegMinSec(value)
