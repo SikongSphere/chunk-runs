@@ -10,11 +10,9 @@
 */
 package org.sikongsphere.index.geosot
 
-import org.scalatest.{FunSpec, ShouldMatchers}
-import org.sikongsphere.index.geosot.common._
+import org.scalatest.FlatSpec
 
-
-class GridTest extends FunSpec with ShouldMatchers {
+class GridTest extends FlatSpec {
     private val coordinates = List[String](
         "42°38'59.68\" S, 1°32'0.06\" E",
         "42°35'15.54\" N, 1°44'25.01\" W"
@@ -25,16 +23,17 @@ class GridTest extends FunSpec with ShouldMatchers {
         "G10020202130112201322320002030102"
     )
 
-    describe("GeoSOT.Grid") {
-        it("can convert coordinate points to quadratic geosot code") {
-            val LEVEL = 32
-            for (i <- Range(0, coordinates.size)) {
-                val lat_lon = coordinates(i).split(", ")
-                val geosot_grid = Grid(lat_lon(0), lat_lon(1), LEVEL)
-                var obtained = geosot_grid.toString
-                var expected = geosot_code(i)
-                assert(clue(obtained) == clue(expected))
-            }
+    behavior of "A GeoSOT Grid"
+
+    it should "convert coordinate points to quadratic geosot code" in {
+//        assert(Set.empty.size === 0)
+        val LEVEL = 32
+        for (i <- Range(0, coordinates.size)) {
+            val lat_lon = coordinates(i).split(", ")
+            val geosot_grid = Grid(lat_lon(0), lat_lon(1), LEVEL)
+            var obtained = geosot_grid.toString
+            var expected = geosot_code(i)
+            assert(obtained === expected)
         }
     }
 }
