@@ -8,10 +8,14 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
 */
-package org.sikongsphere.index.geosot
+package org.sikongsphere.chunkruns.index.geosot
 
 import org.scalatest.FlatSpec
 
+/**
+ * 测试Grid类
+ * @author Ziming Zhang
+ */
 class GridTest extends FlatSpec {
     private val coordinates = List[String](
         "42°38'59.68\" S, 1°32'0.06\" E",

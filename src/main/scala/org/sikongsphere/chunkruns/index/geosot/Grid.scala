@@ -8,9 +8,9 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
 */
-package org.sikongsphere.index.geosot
+package org.sikongsphere.chunkruns.index.geosot
 
-import org.sikongsphere.index.geosot.common._
+import org.sikongsphere.chunkruns.index.geosot.common._
 
 
 /**
@@ -63,7 +63,6 @@ class Grid {
 	/**
 	 * 计算网格的高度，遵照GB/T 40087-2021中5.6.2小节中的公式(3)实现：
 	 * h_n = ((1+theta_0)^(n * r_0)) * r_0 * [(1 + theta_0)^(theta / theta_0) - 1]
-	 *
 	 */
 	def getGridHeight: Double = {
         val part1 = Math.pow(1 + GeoParam.THETA_0, getGridLayer * ratioTheta_)
@@ -72,7 +71,7 @@ class Grid {
 	}
 
     /**
-     * 计算网格在登高面上的长度（赤道方向上粒度），遵照GB/T 40087-2021中5.6.2小节中的公式(4)实现：
+     * 计算网格在等高面上的长度（赤道方向上粒度），遵照GB/T 40087-2021中5.6.2小节中的公式(4)实现：
      * h_n = (1 + theta_0)^(n * r_0)^ * r_0 * theta_0
      */
     def getGridLengthOnContour: Double = {

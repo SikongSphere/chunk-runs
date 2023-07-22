@@ -8,9 +8,9 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
 */
-package org.sikongsphere.index.geosot
+package org.sikongsphere.chunkruns.index.geosot
 
-import org.sikongsphere.index.geosot.common._
+import org.sikongsphere.chunkruns.index.geosot.common._
 
 /**
  * 莫顿编码的实现类
@@ -44,12 +44,12 @@ class MortonCode {
      * @return 返回交叠后的莫顿编码值
      */
     private def simpleInterleave(dims: Array[Dimension]): Array[Int] = {
-        val dimension = dims.size
-        var res: Array[Int] = Array.ofDim[Int](dimension)
-        for (i: Int <- 0 to COMP_LEN - 1) {
-            for (j: Int <- 0 to dimension - 1) {
-                val index: Int = (i * dimension + j) / COMP_LEN
-                res(index) = (res(index) | (((dims(j).getValue() >>> i) & 1) << (i * dimension + j) % COMP_LEN))
+        val DIMENSION = dims.length
+        var res: Array[Int] = Array.ofDim[Int](DIMENSION)
+        for (i: Int <- 0 until COMP_LEN) {
+            for (j: Int <- 0 until DIMENSION) {
+                val index: Int = (i * DIMENSION + j) / COMP_LEN
+                res(index) = (res(index) | (((dims(j).getValue() >>> i) & 1) << (i * DIMENSION + j) % COMP_LEN))
             }
         }
         return res
@@ -66,8 +66,8 @@ class MortonCode {
     private def simpleSeparation(code: Array[Int]): Array[Int] = {
         val dimension: Int = code.size
         var res: Array[Int] = Array.ofDim[Int](dimension)
-        for (i: Int <- 0 to COMP_LEN - 1) {
-            for (j: Int <- 0 to dimension - 1) {
+        for (i: Int <- 0 until COMP_LEN) {
+            for (j: Int <- 0 until dimension) {
                 val offset: Int = i * dimension + j
                 res(j) = (res(j) | (((code(offset / COMP_LEN) >>> (offset % COMP_LEN)) & 1) << i))
             }
@@ -86,7 +86,7 @@ class MortonCode {
         val resultBuilder = new StringBuilder()
         val quaternaryDigits = "0123"
 
-        for (i: Int <- data_.size - 1 to 0 by -1) {
+        for (i: Int <- data_.length - 1 to 0 by -1) {
             var tmpInt = data_(i)
             val byteStringBuilder = new StringBuilder()
             for (_ <- 1 to COMP_LEN / 2) {

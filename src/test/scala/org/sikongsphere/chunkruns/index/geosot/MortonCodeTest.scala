@@ -8,11 +8,16 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
 */
-package org.sikongsphere.index.geosot
+package org.sikongsphere.chunkruns.index.geosot
 
 import org.scalatest.FlatSpec
-import org.sikongsphere.index.geosot.common._
+import org.sikongsphere.chunkruns.index.geosot.common._
 
+
+/**
+ * 测试MortonCode类
+ * @author Ziming Zhang
+ */
 class MortonCodeTest extends FlatSpec {
     private val coordinates = List[(Int, Int)](
         (0xFFFFFFFF, 0xFFFFFFFF),

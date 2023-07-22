@@ -8,7 +8,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
 */
-package org.sikongsphere.index.geosot.common
+package org.sikongsphere.chunkruns.index.geosot.common
 
 /**
  * 经度的封装类
@@ -37,7 +37,6 @@ object Longitude {
 
     /**
      * @param value 32位编码的坐标信息，度占8位，分和秒分别占6位，小数点后的数字精确到1/2048秒，占用11位
-     * @see Coordinate
      */
     def apply(value: Int): Longitude = {
         val obj = new Longitude

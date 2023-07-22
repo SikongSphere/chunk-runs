@@ -8,11 +8,15 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
 */
-package org.sikongsphere.index.geosot.common
+package org.sikongsphere.chunkruns.index.geosot.common
 
 import org.scalatest.FlatSpec
 
 
+/**
+ * 测试Coordinate类
+ * @author Ziming Zhang
+ */
 class CoordinateTest extends FlatSpec {
     private val latitudes = Array[String](
         "42°38'59.68\" S",

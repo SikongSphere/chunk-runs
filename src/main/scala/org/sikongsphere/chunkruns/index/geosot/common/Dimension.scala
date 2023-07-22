@@ -8,7 +8,7 @@
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
 */
-package org.sikongsphere.index.geosot.common
+package org.sikongsphere.chunkruns.index.geosot.common
 
 /**
  * 任意可以以32位Int值表示的坐标分量的抽象，实现该特质的类可作为莫顿编码的维度分量
