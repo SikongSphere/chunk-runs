@@ -80,6 +80,7 @@ class CoordinateTest extends FlatSpec {
             assert(expected === obtained)
         }
     }
+
     it should "produce NoSuchElementException when head is invoked" in {
         assertThrows[NoSuchElementException] {
             Set.empty.head
