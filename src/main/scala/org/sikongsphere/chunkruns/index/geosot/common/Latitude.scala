@@ -18,7 +18,7 @@ import scala.util.matching.Regex
  * @author Ziming Zhang
  */
 class Latitude extends Coordinate {
-    private val _regex_dms : Regex = """\s*(\d+)°(\d+)'(\d+(\.\d+)?)"\s([NS])\s*""".r
+    private val _regex_dms : Regex = """\s*(\d+)°(\d+)'(\d+(\.\d+)?)"\s*([NS])\s*""".r
 }
 
 object Latitude {

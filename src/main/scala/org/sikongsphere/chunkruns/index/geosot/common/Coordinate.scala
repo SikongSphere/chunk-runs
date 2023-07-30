@@ -34,7 +34,7 @@ abstract class Coordinate extends Dimension{
      * 将"{度}°{分}'{秒}\" {方位}"格式的字符串解析为内部表示
      * @throws IllegalArgumentException 当参数不合法时抛出异常
      */
-    protected def parseFromString(dms: String, regex_dms: Regex = """\s*(\d+)°(\d+)'(\d+(\.\d+)?)"\s([NSEW])\s*""".r) = {
+    protected def parseFromString(dms: String, regex_dms: Regex = """\s*(\d+)°(\d+)'(\d+(\.\d+)?)"\s*([NSEW])\s*""".r) = {
         dms match {
             case regex_dms(degrees, minutes, seconds, _, direction) =>
                 degrees_ = degrees.toInt

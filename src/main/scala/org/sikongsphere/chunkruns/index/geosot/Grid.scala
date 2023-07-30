@@ -26,7 +26,7 @@ class Grid {
     private var latitude_ : Latitude = Latitude("0°0'0\" N")
     private var longitude_ : Longitude = Longitude("0°0'0\" E")
     private var elevation_ : Option[Elevation] = None
-    private var level_ : Int = 32
+    private var level_ : Int = 9
     private var code_ : MortonCode = MortonCode(longitude_, latitude_)
     private var ratioTheta_ = GeoParam.theta(level_) / GeoParam.THETA_0
 
@@ -35,12 +35,10 @@ class Grid {
         elevation_ match {
             case None => res
             case Some(elev) => {
-                val elevCode = elev.getValue(level_).toBinaryString
-                elevCode.dropWhile(_ == '0')
-                res + elevCode
+                val elevCode = elev.getValue(level_).toBinaryString.takeRight(level_)
+                res + "-" + elevCode
             }
         }
-
     }
 
     /**
