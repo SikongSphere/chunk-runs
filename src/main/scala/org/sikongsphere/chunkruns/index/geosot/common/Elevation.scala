@@ -46,7 +46,7 @@ class Elevation extends Dimension {
 	* @param level 网格层级
 	*/
 	private def getLayerNumberAtGeodeticHeight(height: Double, level: Int): Int = {
-		val c = GeoParam.theta(level)
+		val c = GeoParam.THETA_0 / GeoParam.theta(level)
 		val res = (c * Math.log((height + GeoParam.EarthRadiusMeters) / GeoParam.EarthRadiusMeters) / Math.log(1 + GeoParam.THETA_0))
 		res.toInt
 	}

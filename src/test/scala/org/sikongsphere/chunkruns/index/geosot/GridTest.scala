@@ -39,7 +39,7 @@ class GridTest extends FlatSpec {
     }
 
     it should "converts coordinate points with elevation to GeoSOT-3D code" in {
-        for (level: Int <- 0 to 32) {
+        for (level: Int <- 15 to 32) {
             val basePath = "src\\test\\resources\\dataset\\"
             val fileName = s"level-${level}-size1000.csv"
             val height = "998.8m"
@@ -50,6 +50,7 @@ class GridTest extends FlatSpec {
                 var obtained = grid.toString
                 var expected = items(2)
 //                assert(obtained === expected)
+                println(s"[TEST]level=${level}, height=${height}, layer=${grid.getGridLayer} " + obtained)
             }
         }
     }

@@ -31,11 +31,14 @@ class Grid {
     private var ratioTheta_ = GeoParam.theta(level_) / GeoParam.THETA_0
 
     override def toString: String = {
+        if(level_ == 0) {
+            return "G"
+        }
         var res: String = ("G" + code_.toString).substring(0, level_ + 1)
         elevation_ match {
             case None => res
             case Some(elev) => {
-                val elevCode = elev.getValue(level_).toBinaryString.takeRight(level_)
+                val elevCode = "%32s".format(elev.getValue(level_).toBinaryString).replace(' ', '0').takeRight(level_)
                 res + "-" + elevCode
             }
         }
