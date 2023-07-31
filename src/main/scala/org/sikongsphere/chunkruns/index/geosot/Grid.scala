@@ -73,7 +73,7 @@ class Grid {
 
     /**
      * 计算网格在等高面上的长度（赤道方向上粒度），遵照GB/T 40087-2021中5.6.2小节中的公式(4)实现：
-     * h_n = (1 + theta_0)^(n * r_0)^ * r_0 * theta_0
+     * L_n = (1 + theta_0)^(n * r_0)^ * r_0 * theta_0
      */
     def getGridLengthOnContour: Double = {
         val part1 = Math.pow(1 + GeoParam.THETA_0, getGridLayer * ratioTheta_)
@@ -86,7 +86,7 @@ class Grid {
     def getGridLayer: Int = {
         elevation_ match {
             case None => 0
-            case Some(elev) => elev.getValue()
+            case Some(elev) => elev.getValue(level_)
         }
     }
 }
