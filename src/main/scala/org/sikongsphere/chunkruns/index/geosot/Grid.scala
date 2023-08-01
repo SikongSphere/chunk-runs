@@ -26,21 +26,22 @@ class Grid {
     private var latitude_ : Latitude = Latitude("0°0'0\" N")
     private var longitude_ : Longitude = Longitude("0°0'0\" E")
     private var elevation_ : Option[Elevation] = None
-    private var level_ : Int = 32
+    private var level_ : Int = 9
     private var code_ : MortonCode = MortonCode(longitude_, latitude_)
     private var ratioTheta_ = GeoParam.theta(level_) / GeoParam.THETA_0
 
     override def toString: String = {
+        if(level_ == 0) {
+            return "G"
+        }
         var res: String = ("G" + code_.toString).substring(0, level_ + 1)
         elevation_ match {
             case None => res
             case Some(elev) => {
-                val elevCode = elev.getValue(level_).toBinaryString
-                elevCode.dropWhile(_ == '0')
-                res + elevCode
+                val elevCode = "%32s".format(elev.getValue(level_).toBinaryString).replace(' ', '0').takeRight(level_)
+                res + "-" + elevCode
             }
         }
-
     }
 
     /**
@@ -72,7 +73,7 @@ class Grid {
 
     /**
      * 计算网格在等高面上的长度（赤道方向上粒度），遵照GB/T 40087-2021中5.6.2小节中的公式(4)实现：
-     * h_n = (1 + theta_0)^(n * r_0)^ * r_0 * theta_0
+     * L_n = (1 + theta_0)^(n * r_0)^ * r_0 * theta_0
      */
     def getGridLengthOnContour: Double = {
         val part1 = Math.pow(1 + GeoParam.THETA_0, getGridLayer * ratioTheta_)
@@ -85,7 +86,7 @@ class Grid {
     def getGridLayer: Int = {
         elevation_ match {
             case None => 0
-            case Some(elev) => elev.getValue()
+            case Some(elev) => elev.getValue(level_)
         }
     }
 }

@@ -19,7 +19,7 @@ object GeoParam {
 	final val EarthRadiusMeters: Double = 6378137
 
 	/**
-	 * 地球赤道面与地球自转轴夹角，单位（弧度）
+	 * 初始剖分定义的基础网格（即第9级网格）对应的经（纬）度差，单位（弧度）
 	 */
 	final val THETA_0: Double = PI / 180
 
@@ -29,6 +29,7 @@ object GeoParam {
 	 * @return 网格对应的经纬跨度差
 	 */
 	def theta(level: Int): Double = {
-		Math.pow(THETA_0, 9 - level)
+		val res = Math.pow(2, 9 - level) * THETA_0
+		res
 	}
 }

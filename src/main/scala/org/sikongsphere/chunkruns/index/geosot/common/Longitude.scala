@@ -16,7 +16,7 @@ package org.sikongsphere.chunkruns.index.geosot.common
  * @author Ziming Zhang
  */
 class Longitude extends Coordinate {
-    private val _regex_dms = """\s*(\d+)°(\d+)'(\d+(\.\d+)?)"\s([EW])\s*""".r
+    private val _regex_dms = """\s*(\d+)°(\d+)'(\d+(\.\d+)?)"\s*([EW])\s*""".r
 }
 
 object Longitude {
