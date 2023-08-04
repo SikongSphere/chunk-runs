@@ -33,7 +33,6 @@ class RaxTree {
 		val endTime = System.nanoTime()
 
 		if (statCollector_.nonEmpty) {
-			statCollector_.get.incrQueryCount()
 			statCollector_.get.incrQueryCost(endTime - startTime)
 		}
 
@@ -46,8 +45,7 @@ class RaxTree {
 		val endTime = System.nanoTime()
 
 		if(res && statCollector_.nonEmpty) {
-			statCollector_.get.incrKeyCount(key)
-			statCollector_.get.incrInsertCost(endTime - startTime)
+			statCollector_.get.incrInsertCost(key, endTime - startTime)
 		}
 		res
 	}
@@ -58,8 +56,7 @@ class RaxTree {
 		val endTime = System.nanoTime()
 
 		if (res && statCollector_.nonEmpty) {
-			statCollector_.get.incrKeyCount(key)
-			statCollector_.get.incrInsertCost(endTime - startTime)
+			statCollector_.get.incrInsertCost(key, endTime - startTime)
 		}
 		res
 	}
@@ -76,8 +73,7 @@ class RaxTree {
 		val endTime: Long = System.nanoTime()
 
 		if(statCollector_.nonEmpty) {
-			statCollector_.get.removeKey(key)
-			statCollector_.get.incrRemoveCost(endTime - startTime)
+			statCollector_.get.incrRemoveCost(key, endTime - startTime)
 		}
 		res
 	}
@@ -317,6 +313,9 @@ class RaxTree {
 			s"TreeDepth=${getTreeDepth}",
 			s"TotalKeyNum=${statCollector_.get.getTotalKeyNum}",
 			s"AverageKeyLen=${statCollector_.get.getAvgKeyLen}",
+			s"InsertCount=${statCollector_.get.getInsertCount}",
+			s"QueryCount=${statCollector_.get.getQueryCount}",
+			s"RemoveCount=${statCollector_.get.getRemoveCount}",
 			s"InsertTime=${statCollector_.get.getInsertCost}ns",
 			s"QueryTime=${statCollector_.get.getQueryCost}ns",
 			s"RemoveTime=${statCollector_.get.getRemoveCost}ns"
@@ -342,37 +341,43 @@ object RaxTree {
 class RaxStatCollector {
 	private var keyCount_ : Int = 0
 	private var keyTotalLen_ : Int = 0
+	private var insertCount_ : Int = 0
 	private var queryCount_ : Int = 0
 	private var removeCount_ : Int = 0
 	private var insertConsumeTime_ : Long = 0
 	private var queryConsumeTime_ : Long = 0
 	private var removeConsumeTime_ : Long = 0
 
-	def incrKeyCount(key: String): Unit = {
+	def incrInsertCost(key: String, interval: Long): Unit = {
 		keyCount_ += 1
+		insertCount_ += 1
 		keyTotalLen_ += key.length
+		insertConsumeTime_ += interval
 	}
 
-	def incrQueryCount(): Unit = queryCount_ += 1
+	def incrQueryCost(interval: Long): Unit = {
+		queryConsumeTime_ += interval
+		queryCount_ += 1
+	}
 
-	def removeKey(key: String): Unit = {
+	def incrRemoveCost(key: String, interval: Long): Unit = {
+		removeConsumeTime_ += interval
 		keyCount_ -= 1
 		keyTotalLen_ -= key.length
 		removeCount_ += 1
 	}
-
-	def incrInsertCost(interval: Long): Unit = insertConsumeTime_ += interval
-
-	def incrQueryCost(interval: Long): Unit = queryConsumeTime_ += interval
-
-	def incrRemoveCost(interval: Long): Unit = removeConsumeTime_ += interval
-
 
 	def getInsertCost: Long = insertConsumeTime_
 
 	def getQueryCost: Long = queryConsumeTime_
 
 	def getRemoveCost: Long = removeConsumeTime_
+
+	def getInsertCount: Int = insertCount_
+
+	def getRemoveCount: Int = removeCount_
+
+	def getQueryCount: Int = queryCount_
 
 	def getTotalKeyNum: Int = keyCount_
 
