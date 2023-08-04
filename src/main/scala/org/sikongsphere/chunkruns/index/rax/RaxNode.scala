@@ -25,7 +25,9 @@ class RaxNode {
 	/*如果isKey_为true，则data_中保存了key对应的value*/
     private var value_ : Option[Array[Byte]] = None
 
-	def isEmpty: Boolean = keySegment_.isEmpty && children_.isEmpty
+	def isEmpty: Boolean = !isKey_ && children_.isEmpty
+
+	def nonEmpty: Boolean = !isEmpty
 
 	def isKey: Boolean = isKey_
 
@@ -34,6 +36,13 @@ class RaxNode {
 	def childrenNum: Int = children_.size
 
 	def getValue: Option[Array[Byte]] = value_
+
+	def needMerge: Boolean = !isKey_ && childrenNum == 1
+
+	/**
+	 * 更新节点key
+	 */
+	def setKeySegment(keySeg: String): Unit = keySegment_ = keySeg
 
 	/**
 	  * 更新节点的值
@@ -51,6 +60,13 @@ class RaxNode {
 		false
 	}
 
+	def removeValue(): Option[Array[Byte]] = {
+		val res = value_
+		isKey_ = false
+		value_ = None
+		res
+	}
+
 	/**
 	  * 返回当前节点所有的子节点
 	  *
@@ -59,8 +75,16 @@ class RaxNode {
 	def getChildren: List[RaxNode] = children_.toList
 
 	/**
+	 *
+	 * @return 第一个子节点
+	 */
+	def getFirstChild: Option[RaxNode] = {
+		children_.headOption
+	}
+
+	/**
 	 * 找到能与keySeq大于一个字符长度前缀匹配的子节点
-	 * 
+	 *
 	 * @param keySeg 需要匹配的字符串
 	 * @return 匹配到的子节点
 	 */
@@ -95,6 +119,17 @@ class RaxNode {
 		child2.value_ = value_
 		child1.addChild(child2)
 		child1
+	}
+
+	def mergeWith(child: RaxNode): Unit = {
+		assert(children_.contains(child))
+		assert(!isKey_)
+		assert(childrenNum == 1)
+
+		keySegment_ += child.keySegment_
+		children_ = child.children_
+		value_ = child.value_
+		isKey_ = child.isKey_
 	}
 
 	override def toString: String = {

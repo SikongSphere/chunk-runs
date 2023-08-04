@@ -18,6 +18,8 @@ class RaxTree {
 
 	private var root_ : RaxNode = RaxNode()
 
+	def isEmpty: Boolean = root_.isEmpty
+
 	def find(key: String): Option[Array[Byte]] = {
 		val WalkResult(raxStack: List[RaxNode], splitPos: Int, matchLen: Int) = lowWalk(key)
 		raxStack.head.getValue
@@ -29,6 +31,67 @@ class RaxTree {
 
 	def tryInsert(key: String, value: Array[Byte]): Boolean = {
 		genericInsert(key, value, overwrite = false)
+	}
+
+	def remove(key: String): Option[Array[Byte]] = {
+		var WalkResult(raxStack: List[RaxNode], splitPos: Int, matchLen: Int) = lowWalk(key)
+		var node = raxStack.head
+		raxStack = raxStack.tail
+
+		if(!node.isKey || matchLen != key.length || splitPos != node.keySegment.length) {
+			return None
+		}
+		else {
+			val res = node.removeValue()
+			/*
+			 * 删除后的节点可能需要合并，合并有以下情况 :
+			 * 1.当前节点为空: 不是根节点则直接从父节点删除，否则删除根节点。这个合并过程是递归的，即如果父节点删除子节点造成父节点成为空节点，
+			 *   则需要继续将父节点删除。如果父节点可以和当前节点合并，则合并后直接返回
+			 * 2.当前节点不为空：
+			 * 2.1 当前节点只有一个子节点: 将子节点合并到当前节点
+			 * 2.2 父节点可以合并: 将当前节点合并到父节点
+			*/
+			var parentOption: Option[RaxNode] = raxStack.headOption
+			/*case1*/
+			while(node.isEmpty) {
+				parentOption match {
+					case Some(parent) => {
+						raxStack = raxStack.tail
+						parent.removeChild(node)
+						if(parent.needMerge) {
+							parent.mergeWith(parent.getFirstChild.get)
+							return res
+						}
+						else if(parent.isEmpty) {
+							node = parent
+							parentOption = raxStack.headOption
+						}
+						else return res
+					}
+					case None => {
+						root_ = RaxNode("")
+						return res
+					}
+				}
+			}
+			/*Case2*/
+			if(node.nonEmpty) {
+				/*合并当前节点的子节点*/
+				if(node.needMerge) {
+					var child: RaxNode = node.getChildren.head
+					node.mergeWith(child)
+				}
+				/*合并到父节点*/
+				parentOption match {
+					case Some(parent) => {
+						if(parent.needMerge) {
+							parent.mergeWith(node)
+						}
+					}
+				}
+			}
+			res
+		}
 	}
 
 	private def genericInsert(key: String, value: Array[Byte], overwrite: Boolean): Boolean = {
@@ -53,7 +116,7 @@ class RaxTree {
 
 		if (matchLen == key.length && node.keySegment.length == splitPos) {
 			/*在node处形成了完整key匹配，将value插入该node中*/
-			node.setValue(value, overwrite = true)
+			node.setValue(value, overwrite)
 		}
 		else if (matchLen == key.length && node.keySegment.length > splitPos) {
 			/*
