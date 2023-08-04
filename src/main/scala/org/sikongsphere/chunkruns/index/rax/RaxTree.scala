@@ -10,6 +10,7 @@
 */
 package org.sikongsphere.chunkruns.index.rax
 
+import java.io._
 
 /**
   * Rax实现
@@ -18,51 +19,105 @@ class RaxTree {
 
 	private var root_ : RaxNode = RaxNode()
 
+	private var statCollector_ : Option[RaxStatCollector] = None
+
 	def isEmpty: Boolean = root_.isEmpty
 
+	def statCollectOn(): Unit = {
+		if(statCollector_.isEmpty) statCollector_ = Some(new RaxStatCollector)
+	}
+
 	def find(key: String): Option[Array[Byte]] = {
+		val startTime = System.nanoTime()
 		val WalkResult(raxStack: List[RaxNode], splitPos: Int, matchLen: Int) = lowWalk(key)
+		val endTime = System.nanoTime()
+
+		if (statCollector_.nonEmpty) {
+			statCollector_.get.incrQueryCount()
+			statCollector_.get.incrQueryCost(endTime - startTime)
+		}
+
 		raxStack.head.getValue
 	}
 
 	def insert(key: String, value: Array[Byte]): Boolean = {
-		genericInsert(key, value, overwrite = true)
+		val startTime = System.nanoTime()
+		val res = genericInsert(key, value, overwrite = true)
+		val endTime = System.nanoTime()
+
+		if(res && statCollector_.nonEmpty) {
+			statCollector_.get.incrKeyCount(key)
+			statCollector_.get.incrInsertCost(endTime - startTime)
+		}
+		res
 	}
 
 	def tryInsert(key: String, value: Array[Byte]): Boolean = {
-		genericInsert(key, value, overwrite = false)
+		val startTime = System.nanoTime()
+		val res = genericInsert(key, value, overwrite = false)
+		val endTime = System.nanoTime()
+
+		if (res && statCollector_.nonEmpty) {
+			statCollector_.get.incrKeyCount(key)
+			statCollector_.get.incrInsertCost(endTime - startTime)
+		}
+		res
 	}
 
+	/**
+	 * 移除指定元素，返回被移除元素的值
+	 *
+	 * @param key
+	 * @return
+	 */
 	def remove(key: String): Option[Array[Byte]] = {
+		val startTime: Long = System.nanoTime()
+		val res = genericRemove(key)
+		val endTime: Long = System.nanoTime()
+
+		if(statCollector_.nonEmpty) {
+			statCollector_.get.removeKey(key)
+			statCollector_.get.incrRemoveCost(endTime - startTime)
+		}
+		res
+	}
+
+	/**
+	 * 移除元素的底层方法
+	 *
+	 * @param key
+	 * @return
+	 */
+	private def genericRemove(key: String): Option[Array[Byte]] = {
 		var WalkResult(raxStack: List[RaxNode], splitPos: Int, matchLen: Int) = lowWalk(key)
 		var node = raxStack.head
 		raxStack = raxStack.tail
 
-		if(!node.isKey || matchLen != key.length || splitPos != node.keySegment.length) {
+		if (!node.isKey || matchLen != key.length || splitPos != node.keySegment.length) {
 			return None
 		}
 		else {
 			val res = node.removeValue()
 			/*
-			 * 删除后的节点可能需要合并，合并有以下情况 :
-			 * 1.当前节点为空: 不是根节点则直接从父节点删除，否则删除根节点。这个合并过程是递归的，即如果父节点删除子节点造成父节点成为空节点，
-			 *   则需要继续将父节点删除。如果父节点可以和当前节点合并，则合并后直接返回
-			 * 2.当前节点不为空：
-			 * 2.1 当前节点只有一个子节点: 将子节点合并到当前节点
-			 * 2.2 父节点可以合并: 将当前节点合并到父节点
-			*/
+             * 删除后的节点可能需要合并，合并有以下情况 :
+             * 1.当前节点为空: 不是根节点则直接从父节点删除，否则删除根节点。这个合并过程是递归的，即如果父节点删除子节点造成父节点成为空节点，
+             *   则需要继续将父节点删除。如果父节点可以和当前节点合并，则合并后直接返回
+             * 2.当前节点不为空：
+             * 2.1 当前节点只有一个子节点: 将子节点合并到当前节点
+             * 2.2 父节点可以合并: 将当前节点合并到父节点
+            */
 			var parentOption: Option[RaxNode] = raxStack.headOption
 			/*case1*/
-			while(node.isEmpty) {
+			while (node.isEmpty) {
 				parentOption match {
 					case Some(parent) => {
 						raxStack = raxStack.tail
 						parent.removeChild(node)
-						if(parent.needMerge) {
+						if (parent.needMerge) {
 							parent.mergeWith(parent.getFirstChild.get)
 							return res
 						}
-						else if(parent.isEmpty) {
+						else if (parent.isEmpty) {
 							node = parent
 							parentOption = raxStack.headOption
 						}
@@ -75,16 +130,16 @@ class RaxTree {
 				}
 			}
 			/*Case2*/
-			if(node.nonEmpty) {
+			if (node.nonEmpty) {
 				/*合并当前节点的子节点*/
-				if(node.needMerge) {
+				if (node.needMerge) {
 					var child: RaxNode = node.getChildren.head
 					node.mergeWith(child)
 				}
 				/*合并到父节点*/
 				parentOption match {
 					case Some(parent) => {
-						if(parent.needMerge) {
+						if (parent.needMerge) {
 							parent.mergeWith(node)
 						}
 					}
@@ -92,6 +147,21 @@ class RaxTree {
 			}
 			res
 		}
+	}
+
+	def getTreeDepth: Int = getDepth(root_)
+
+	private def getDepth(node: RaxNode): Int = {
+		if(node.childrenNum == 0) {
+			return 1
+		}
+
+		var depth = 0
+		for(child <- node.getChildren) {
+			val childDepth = getDepth(child)
+			depth = if(childDepth > depth) childDepth else depth
+		}
+		depth + 1
 	}
 
 	private def genericInsert(key: String, value: Array[Byte], overwrite: Boolean): Boolean = {
@@ -167,7 +237,7 @@ class RaxTree {
 
 	/**
 	 * 对树进行深度优先遍历，返回最后一个访问的节点，以及匹配到key的长度
-	 * 
+	 *
 	 */
 	private def lowWalk(key: String): WalkResult = {
 		assert(key.nonEmpty)
@@ -193,7 +263,7 @@ class RaxTree {
 			}
 			keyPostfix = key.substring(matchLen)
 
-			/* 
+			/*
 			 * Case1: abcd, abc
 			*/
 			if(matchLen == key.length()) {
@@ -218,26 +288,44 @@ class RaxTree {
 		WalkResult(raxStack, splitPos, matchLen)
 	}
 
-	def printTreeView(): Unit = {
-		printTree(root_, "")
+	def printTreeView(fileWriter: Option[Writer] = None): Unit = {
+		if(fileWriter.nonEmpty) showStat(fileWriter)
+		printTree(root_, "", fileWriter)
 	}
 
-	private def printTree(root: RaxNode, prefix: String = ""): Unit = {
+	private def printTree(root: RaxNode, prefix: String = "", fileWriter: Option[Writer] = None): Unit = {
 		var str = prefix  + root.toString
 
 		val children = root.getChildren
 		if(children.nonEmpty) {
 			str += "->"
-			printTree(children.head, str)
+			printTree(children.head, str, fileWriter)
 			for(child <- children.tail) {
-				printTree(child,  " " * str.length)
+				printTree(child,  " " * str.length, fileWriter)
 			}
 		}
 		else {
 			println(str)
+			if(fileWriter.nonEmpty) fileWriter.get.write(str + "\n")
 		}
 	}
 
+	private def showStat(fileWriter: Option[Writer] = None): Unit = {
+		if (statCollector_.isEmpty) return
+
+		val msg: List[String] = List(
+			s"TreeDepth=${getTreeDepth}",
+			s"TotalKeyNum=${statCollector_.get.getTotalKeyNum}",
+			s"AverageKeyLen=${statCollector_.get.getAvgKeyLen}",
+			s"InsertTime=${statCollector_.get.getInsertCost}ns",
+			s"QueryTime=${statCollector_.get.getQueryCost}ns",
+			s"RemoveTime=${statCollector_.get.getRemoveCost}ns"
+		)
+		for(m <- msg) {
+			println(m)
+			if (fileWriter.nonEmpty) fileWriter.get.write(m + "\n")
+		}
+	}
 
 }
 
@@ -246,4 +334,47 @@ object RaxTree {
 		val obj = new RaxTree()
 		obj
 	}
+}
+
+/**
+ * 采集rax tree的统计信息
+ */
+class RaxStatCollector {
+	private var keyCount_ : Int = 0
+	private var keyTotalLen_ : Int = 0
+	private var queryCount_ : Int = 0
+	private var removeCount_ : Int = 0
+	private var insertConsumeTime_ : Long = 0
+	private var queryConsumeTime_ : Long = 0
+	private var removeConsumeTime_ : Long = 0
+
+	def incrKeyCount(key: String): Unit = {
+		keyCount_ += 1
+		keyTotalLen_ += key.length
+	}
+
+	def incrQueryCount(): Unit = queryCount_ += 1
+
+	def removeKey(key: String): Unit = {
+		keyCount_ -= 1
+		keyTotalLen_ -= key.length
+		removeCount_ += 1
+	}
+
+	def incrInsertCost(interval: Long): Unit = insertConsumeTime_ += interval
+
+	def incrQueryCost(interval: Long): Unit = queryConsumeTime_ += interval
+
+	def incrRemoveCost(interval: Long): Unit = removeConsumeTime_ += interval
+
+
+	def getInsertCost: Long = insertConsumeTime_
+
+	def getQueryCost: Long = queryConsumeTime_
+
+	def getRemoveCost: Long = removeConsumeTime_
+
+	def getTotalKeyNum: Int = keyCount_
+
+	def getAvgKeyLen: Double = if(keyCount_ > 0) keyTotalLen_ / keyCount_ else 0
 }

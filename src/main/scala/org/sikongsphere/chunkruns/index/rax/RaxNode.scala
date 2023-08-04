@@ -55,7 +55,7 @@ class RaxNode {
 		if(!isKey_ || overwrite) {
 			isKey_ = true
 			value_ = Some(value)
-			true
+			return true
 		}
 		false
 	}
