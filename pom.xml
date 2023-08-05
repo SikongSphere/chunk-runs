@@ -14,7 +14,7 @@
         <scala.binary.version>2.12</scala.binary.version>
         <scalatest.version>3.0.8</scalatest.version>
         <geotools.version>25.5</geotools.version>
-        <mysql.version>8.0.16</mysql.version>
+        <mysql.version>8.0.30</mysql.version>
         <zookeeper.version>3.5.7</zookeeper.version>
         <curator.version>4.3.0</curator.version>
         <lombok.version>1.18.20</lombok.version>
@@ -67,12 +67,6 @@
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-protocol</artifactId>
             <version>${hbase.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_${scala.binary.version}</artifactId>
-            <version>${scalatest.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
@@ -165,6 +159,22 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
+        </dependency>
+		<dependency>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-library</artifactId>
+			<version>2.12.13</version>
+		</dependency>
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_${scala.binary.version}</artifactId>
+            <version>${scalatest.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.16.0</version>
         </dependency>
     </dependencies>
 
